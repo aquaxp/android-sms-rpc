@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">SMS Gate</string>
+
+    <string name="service_started">SMS Gate service was started</string>
+    <string name="service_failed">SMS Gate service failed to start</string>
+    <string name="service_stopped">SMS Gate service was stopped</string>
+
+    <string name="service_enabled">RPC enabled</string>
+    <string name="service_disabled">RPC disabled</string>
 </resources>
