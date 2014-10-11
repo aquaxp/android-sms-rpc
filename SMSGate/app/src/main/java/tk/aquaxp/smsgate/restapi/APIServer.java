@@ -37,6 +37,12 @@ public class APIServer extends NanoHTTPD {
         //subscribers = new ArrayList<String>();
     }
 
+    @Override
+    public void stop() {
+        super.stop();
+        rpc.cleanDestroy();
+    }
+
     protected Response createErrorResponse(Response.IStatus status, String reason){
         try{
             JSONObject json = new JSONObject();

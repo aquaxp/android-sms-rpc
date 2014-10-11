@@ -1,27 +1,92 @@
 package tk.aquaxp.smsgate.activity;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Intent;
 import android.os.Bundle;
-
-import java.io.IOException;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import tk.aquaxp.smsgate.R;
-import tk.aquaxp.smsgate.restapi.APIServer;
+import tk.aquaxp.smsgate.service.RPCService;
+import tk.aquaxp.smsgate.util.NetUtils;
 
 /**
  * Created by mindworm on 08/10/14.
  */
 public class MainActivity extends Activity{
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.main_layout);
+//        try {
+//            APIServer lol = new APIServer(getApplicationContext(), 8080);
+//            lol.start();
+//        } catch (IOException e) {
+//
+//            e.printStackTrace();
+//        }
+//    }
+    private static final String TAG = "MainActivity";
+    private Button serviceButton;
+
+    ToggleButton toggleButton;
+    TextView localIp;
+
+    public boolean isMyServiceRunning(){
+        String myService = RPCService.class.getName();
+        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo serviceInfo: activityManager.getRunningServices(Integer.MAX_VALUE)){
+            if(myService.equals(serviceInfo.service.getClassName())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected void startRPCService(){
+        Log.i(TAG, "Starting RPCService");
+
+        startService(new Intent(this,RPCService.class));
+    }
+
+    protected void stopRPCService(){
+        Log.i(TAG, "Stopping RPCService");
+        stopService(new Intent(this,RPCService.class));
+    }
+
+    public void serviceButtonClick(View view){
+        if(!isMyServiceRunning()){
+            startRPCService();
+            RPCService.setEnabled(this, true);
+        } else{
+            stopRPCService();
+            RPCService.setEnabled(this, false);
+        }
+        toggleButton.setChecked(isMyServiceRunning());
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_layout);
-        try {
-            APIServer lol = new APIServer(getApplicationContext(), 8080);
-            lol.start();
-        } catch (IOException e) {
+        toggleButton = (ToggleButton) findViewById(R.id.serviceToggleButton);
+        localIp = (TextView) findViewById(R.id.localIp);
+        boolean enabled = RPCService.isEnabled(this);
 
-            e.printStackTrace();
-        }
+//        if(enabled) {
+//            if (!isMyServiceRunning()) {
+//                startRPCService();
+//            }
+//        }
+
+
+        toggleButton.setChecked(isMyServiceRunning());
+        localIp.setText(String.format("Listening on: %s, port 8080", NetUtils.getLocalIpAdresses()));
     }
 }
+

@@ -31,7 +31,11 @@ public final class RPC {
         smsBroadcastReceiver = new SMSBroadcastReceiver();
         smsBroadcastReceiver.setRPCHandler(this);
         IntentFilter callInterceptorIntentFilter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
-        context.registerReceiver(smsBroadcastReceiver, callInterceptorIntentFilter);
+        this.context.registerReceiver(smsBroadcastReceiver, callInterceptorIntentFilter);
+    }
+
+    public void cleanDestroy(){
+        this.context.unregisterReceiver(smsBroadcastReceiver);
     }
 
     public void sendSMS(String phoneNo, String text){
@@ -58,4 +62,6 @@ public final class RPC {
         //TODO
         Log.i(TAG, String.format("transmitting message from:%s", phoneNo));
     }
+
+
 }

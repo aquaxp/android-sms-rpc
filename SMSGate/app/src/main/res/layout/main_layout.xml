@@ -49,25 +49,27 @@
         android:text="New Text"
         android:id="@+id/textView13"
         android:layout_toStartOf="@+id/textView12"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/localIp" />
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New ToggleButton"
+        android:id="@+id/serviceToggleButton"
+        android:onClick="serviceButtonClick"
+        android:layout_below="@+id/textView12"
+        android:layout_alignEnd="@+id/textView12"
+        android:layout_marginTop="102dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@android:style/TextAppearance.Small"
+        android:id="@+id/localIp"
+        android:layout_toStartOf="@+id/serviceToggleButton"
+        android:autoText="false"
         android:layout_below="@+id/textView3"
         android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_above="@+id/button" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button"
-        android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@+id/textView12" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button2"
-        android:layout_toEndOf="@+id/button"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/textView13" />
+        android:layout_alignBottom="@+id/serviceToggleButton" />
 </RelativeLayout>

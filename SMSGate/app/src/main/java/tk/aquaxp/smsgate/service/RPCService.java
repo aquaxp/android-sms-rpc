@@ -40,17 +40,22 @@ public final class RPCService extends Service {
     public void onCreate(){
         Log.d(TAG, "onCreate()");
 
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
         try{
             httpd = new APIServer(this, 8080);
             httpd.start();
+            Log.i(TAG,"in onCreate");
         } catch (IOException e){
             showNotification(R.string.service_failed);
         }
 
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
 
         // Display notification about starting in notification bar
         showNotification(R.string.service_started);
+
+        Toast.makeText(getApplicationContext(), R.string.service_started, Toast.LENGTH_LONG).show();
     }
 
     @Override
