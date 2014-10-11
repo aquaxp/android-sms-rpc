@@ -29,3 +29,8 @@ Remove subscriber from list:
 ```
 http://local.ip:port/settings/subscribers/rem?no=999999999999
 ```
+Adding external server for subscriber's answers postprocessing:
+```
+http://local.ip:port/settings/transmit/server?address=http%3A%2F%2Fserver.com%2F/sms
+```
+SMS Gate generate next request `http://server.com/sms?from=99999999999&text=wwwwwwwww`
