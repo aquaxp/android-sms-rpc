@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -18,21 +17,7 @@ import tk.aquaxp.smsgate.util.NetUtils;
  * Created by mindworm on 08/10/14.
  */
 public class MainActivity extends Activity{
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.main_layout);
-//        try {
-//            APIServer lol = new APIServer(getApplicationContext(), 8080);
-//            lol.start();
-//        } catch (IOException e) {
-//
-//            e.printStackTrace();
-//        }
-//    }
     private static final String TAG = "MainActivity";
-    private Button serviceButton;
-
     ToggleButton toggleButton;
     TextView localIp;
 
@@ -49,7 +34,6 @@ public class MainActivity extends Activity{
 
     protected void startRPCService(){
         Log.i(TAG, "Starting RPCService");
-
         startService(new Intent(this,RPCService.class));
     }
 
@@ -78,12 +62,11 @@ public class MainActivity extends Activity{
         localIp = (TextView) findViewById(R.id.localIp);
         boolean enabled = RPCService.isEnabled(this);
 
-//        if(enabled) {
-//            if (!isMyServiceRunning()) {
-//                startRPCService();
-//            }
-//        }
-
+        if(enabled) {
+            if (!isMyServiceRunning()) {
+                startRPCService();
+            }
+        }
 
         toggleButton.setChecked(isMyServiceRunning());
         localIp.setText(String.format("Listening on: %s, port 8080", NetUtils.getLocalIpAdresses()));

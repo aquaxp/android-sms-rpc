@@ -5,71 +5,25 @@
     android:layout_height="fill_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/textView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/textView2"
-        android:layout_toEndOf="@+id/textView"
-        android:layout_above="@+id/textView12"
-        android:layout_alignParentEnd="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/textView3"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/textView12"
-        android:layout_toEndOf="@+id/textView"
-        android:layout_alignTop="@+id/textView3"
-        android:layout_alignParentEnd="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:text="New Text"
-        android:id="@+id/textView13"
-        android:layout_toStartOf="@+id/textView12"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/localIp" />
-
     <ToggleButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New ToggleButton"
         android:id="@+id/serviceToggleButton"
         android:onClick="serviceButtonClick"
-        android:layout_below="@+id/textView12"
-        android:layout_alignEnd="@+id/textView12"
-        android:layout_marginTop="102dp" />
+        android:textOff="@string/service_disabled"
+        android:textOn="@string/service_enabled"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/localIp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Small"
+        android:textAppearance="@android:style/TextAppearance.Large"
         android:id="@+id/localIp"
         android:layout_toStartOf="@+id/serviceToggleButton"
         android:autoText="false"
-        android:layout_below="@+id/textView3"
+        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_alignBottom="@+id/serviceToggleButton" />
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>

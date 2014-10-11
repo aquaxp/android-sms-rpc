@@ -26,7 +26,7 @@ public final class RPCService extends Service {
     private static final String PREF_ENABLED = "serviceEnabled";
 
     private APIServer httpd;
-    private NotificationManager notificationManager;
+    protected NotificationManager notificationManager;
 
     // Unique notification number for notification. We use it on Notification start, and to cancel it
     private final int NOTIFICATION = R.string.service_started;
@@ -40,7 +40,7 @@ public final class RPCService extends Service {
     public void onCreate(){
         Log.d(TAG, "onCreate()");
 
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        this.notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         try{
             httpd = new APIServer(this, 8080);
@@ -74,7 +74,7 @@ public final class RPCService extends Service {
         httpd = null;
 
         // Dismiss notification
-        notificationManager.cancel(NOTIFICATION);
+        this.notificationManager.cancel(NOTIFICATION);
 
         //Tell the user that we stoped
         Toast.makeText(getApplicationContext(), R.string.service_stopped, Toast.LENGTH_LONG).show();
@@ -83,17 +83,16 @@ public final class RPCService extends Service {
     // Show notification while service is running
     private void showNotification(int textId) {
         final CharSequence text = getText(R.string.service_started);
-        final PendingIntent contentIntent = PendingIntent.getActivity(this, 0,new Intent(this, MainActivity.class), 0);
+        final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
         //final Notification notification = new Notification(R.drawable.ic_launcher, text, System.currentTimeMillis());
 
-        Notification notification = new Notification.Builder(this)
+        Notification.Builder notificationBuilder = new Notification.Builder(this)
                 .setContentTitle(text)
                 .setContentText(text)
                 .setContentIntent(contentIntent)
-                //.setSmallIcon(R.drawable.ic_launcher)
-                .build();
+                .setSmallIcon(R.drawable.ic_launcher);
 
-        notificationManager.notify(NOTIFICATION, notification);
+        this.notificationManager.notify(NOTIFICATION, notificationBuilder.build());
     }
 
     public static boolean isEnabled(Context context){

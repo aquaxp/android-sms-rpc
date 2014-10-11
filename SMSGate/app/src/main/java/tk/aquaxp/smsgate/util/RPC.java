@@ -2,6 +2,7 @@ package tk.aquaxp.smsgate.util;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
 import android.util.JsonWriter;
 import android.util.Log;
@@ -10,6 +11,7 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 
+import tk.aquaxp.smsgate.asynctask.TransmitTask;
 import tk.aquaxp.smsgate.receiver.SMSBroadcastReceiver;
 
 /**
@@ -23,10 +25,12 @@ public final class RPC {
     Context context;
     public ArrayList<String> subscribers;
     private SMSBroadcastReceiver smsBroadcastReceiver;
+    public String server;
 
     public RPC(Context context){
         this.context = context;
         subscribers = new ArrayList<String>();
+        server = "";
 
         smsBroadcastReceiver = new SMSBroadcastReceiver();
         smsBroadcastReceiver.setRPCHandler(this);
@@ -59,8 +63,28 @@ public final class RPC {
     }
 
     public void transmitSMS(String phoneNo, String body){
-        //TODO
-        Log.i(TAG, String.format("transmitting message from:%s", phoneNo));
+        if (server.isEmpty()){
+            Log.i(TAG, String.format("No server to transmit message from %s", phoneNo));
+            return;
+        }
+        if (!subscribers.isEmpty()){
+            for(String s:subscribers){
+                if (PhoneNumberUtils.compare(context,s,phoneNo)){
+                    try {
+                        new TransmitTask().execute(String.format("%s?from=%s&text=%s", this.server, phoneNo, body));
+                        Log.i(TAG, String.format("transmitting message from:%s to %s?from=%s&text=%s", phoneNo, this.server, phoneNo, body));
+                    }
+                    catch (Exception e){
+                        //TODO
+                    }
+                }
+            }
+//            if(subscribers.contains(phoneNo)){
+//                new TransmitTask().execute(String.format("%s?from=%s&text=%s", this.server, phoneNo, body));
+//                Log.i(TAG, String.format("transmitting message from:%s to %s?from=%s&text=%s", phoneNo, this.server, phoneNo, body));
+//            }
+        }
+
     }
 
 

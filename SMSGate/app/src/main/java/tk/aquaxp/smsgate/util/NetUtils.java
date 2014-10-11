@@ -2,6 +2,8 @@ package tk.aquaxp.smsgate.util;
 
 import android.util.Log;
 
+import org.apache.http.conn.util.InetAddressUtils;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -26,7 +28,7 @@ public abstract class NetUtils {
 
                 while(ips.hasMoreElements()){
                     InetAddress ip = ips.nextElement();
-                    if(!ip.isLoopbackAddress()){
+                    if(!ip.isLoopbackAddress() && InetAddressUtils.isIPv4Address(ip.getHostAddress())){
                         adresses.add(ip.getHostAddress());
                     }
                 }

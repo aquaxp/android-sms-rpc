@@ -115,7 +115,16 @@ public class APIServer extends NanoHTTPD {
     }
 
     public Response serveSetSubscribers(IHTTPSession session) throws JSONException{
-        rpc.subscribers = new ArrayList<String>(Arrays.asList(session.getParms().get("subscribers").split("\\s*,\\s*")));
+        String rawSubscribers = session.getParms().get("subscribers");
+        if (rawSubscribers.isEmpty()){
+            return createErrorResponse(Response.Status.BAD_REQUEST, "unknown request params");
+        }
+            rpc.subscribers = new ArrayList<String>(Arrays.asList(rawSubscribers.split("\\s*,\\s*")));
+        return createSuccessResponse();
+    }
+
+    public Response serveSetTransmitServer(IHTTPSession session) throws JSONException{
+        rpc.server = session.getParms().get("address");
         return createSuccessResponse();
     }
 
@@ -178,6 +187,9 @@ public class APIServer extends NanoHTTPD {
             //if (session.getUri().equals("/settings/subscribers/rem")){
             //    return serveBatchSMSSend(session);
             //}
+            if (session.getUri().equals("/settings/transmit/server")){
+                return serveSetTransmitServer(session);
+            }
 
             return serveResource(Response.Status.NOT_FOUND, MIME_HTML, R.raw.error404);
         }
