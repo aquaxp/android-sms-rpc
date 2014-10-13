@@ -11,7 +11,12 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import tk.aquaxp.smsgate.R;
 import tk.aquaxp.smsgate.activity.MainActivity;
@@ -45,7 +50,7 @@ public final class RPCService extends Service {
         try{
             httpd = new APIServer(this, 8080);
             httpd.start();
-            Log.i(TAG,"in onCreate");
+            httpd.setSubscribers(loadSubscribers(getApplicationContext()));
         } catch (IOException e){
             showNotification(R.string.service_failed);
         }
@@ -69,7 +74,7 @@ public final class RPCService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy()");
-
+        saveSubscribers(getApplicationContext(), httpd.getSubscribers());
         httpd.stop();
         httpd = null;
 
@@ -90,7 +95,8 @@ public final class RPCService extends Service {
                 .setContentTitle(text)
                 .setContentText(text)
                 .setContentIntent(contentIntent)
-                .setSmallIcon(R.drawable.ic_launcher);
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setOngoing(true);
 
         this.notificationManager.notify(NOTIFICATION, notificationBuilder.build());
     }
@@ -105,5 +111,39 @@ public final class RPCService extends Service {
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean(RPCService.PREF_ENABLED, enabled);
         editor.apply();
+    }
+
+    public void saveSubscribers(Context context, ArrayList<String> subscribers){
+        try {
+            FileOutputStream fileOutputStream = openFileOutput("subscribers.txt", MODE_PRIVATE);
+            DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);
+            dataOutputStream.writeInt(subscribers.size());
+            for (String subscriber:subscribers){
+                dataOutputStream.writeUTF(subscriber);
+            }
+            dataOutputStream.flush();
+            dataOutputStream.close();
+        }
+        catch (IOException e){
+            Log.e(TAG,"Problem with saving subscribers list", e);
+
+        }
+    }
+    public ArrayList<String> loadSubscribers(Context context){
+        ArrayList<String> subscribers = new ArrayList<String>();
+        try {
+            FileInputStream inputStream = openFileInput("subscribers.txt");
+            DataInputStream dataInputStream = new DataInputStream(inputStream);
+            int size = dataInputStream.readInt();
+            for (int i = 0; i < size; i++){
+                String subscriber = dataInputStream.readUTF();
+                subscribers.add(subscriber);
+            }
+        }
+        catch (IOException e){
+            Log.e(TAG,"Problem with loading subscribers list", e);
+        }
+
+        return subscribers;
     }
 }

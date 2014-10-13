@@ -23,19 +23,28 @@ public final class RPC {
     public static final String TAG = "RPC";
 
     Context context;
-    public ArrayList<String> subscribers;
+    private ArrayList<String> subscribers;
     private SMSBroadcastReceiver smsBroadcastReceiver;
     public String server;
 
     public RPC(Context context){
         this.context = context;
         subscribers = new ArrayList<String>();
+
         server = "";
 
         smsBroadcastReceiver = new SMSBroadcastReceiver();
         smsBroadcastReceiver.setRPCHandler(this);
         IntentFilter callInterceptorIntentFilter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
         this.context.registerReceiver(smsBroadcastReceiver, callInterceptorIntentFilter);
+    }
+
+    public void setSubscribers(ArrayList<String> subs){
+        subscribers = subs;
+    }
+
+    public ArrayList<String> getSubscribers(){
+        return subscribers;
     }
 
     public void cleanDestroy(){
@@ -69,7 +78,7 @@ public final class RPC {
         }
         if (!subscribers.isEmpty()){
             for(String s:subscribers){
-                if (PhoneNumberUtils.compare(context,s,phoneNo)){
+                if (PhoneNumberUtils.compare(s,phoneNo)){
                     try {
                         new TransmitTask().execute(String.format("%s?from=%s&text=%s", this.server, phoneNo, body));
                         Log.i(TAG, String.format("transmitting message from:%s to %s?from=%s&text=%s", phoneNo, this.server, phoneNo, body));
@@ -77,14 +86,13 @@ public final class RPC {
                     catch (Exception e){
                         //TODO
                     }
+                } else {
+                    Log.i(TAG, String.format("%s is not from subscribers list", phoneNo));
                 }
             }
-//            if(subscribers.contains(phoneNo)){
-//                new TransmitTask().execute(String.format("%s?from=%s&text=%s", this.server, phoneNo, body));
-//                Log.i(TAG, String.format("transmitting message from:%s to %s?from=%s&text=%s", phoneNo, this.server, phoneNo, body));
-//            }
+        } else{
+            Log.i(TAG, String.format("No subscribers to transmit message from %s", phoneNo));
         }
-
     }
 
 

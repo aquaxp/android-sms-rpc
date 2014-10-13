@@ -27,20 +27,28 @@ public class APIServer extends NanoHTTPD {
     final RPC rpc;
     final Context context;
 
-    //public ArrayList<String> subscribers;
+    //private ArrayList<String> subscribers;
 
 
     public APIServer(Context context, int port) throws IOException{
         super(port);
         this.rpc = new RPC(context);
         this.context = context;
-        //subscribers = new ArrayList<String>();
+        //subscribers = rpc.getSubscribers();
     }
 
     @Override
     public void stop() {
         super.stop();
         rpc.cleanDestroy();
+    }
+
+    public void setSubscribers(ArrayList<String> subs){
+        rpc.setSubscribers(subs);
+    }
+
+    public ArrayList<String> getSubscribers(){
+        return rpc.getSubscribers();
     }
 
     protected Response createErrorResponse(Response.IStatus status, String reason){
@@ -92,14 +100,14 @@ public class APIServer extends NanoHTTPD {
 
         String text = session.getParms().get("text");
         
-        if (rpc.subscribers.isEmpty()){
+        if (rpc.getSubscribers().isEmpty()){
             return createErrorResponse(Response.Status.BAD_REQUEST, "subscribers list is empty");
         }
         else if (text == null || text.isEmpty()){
             return createErrorResponse(Response.Status.BAD_REQUEST, "no phone number or text");
         }
 
-        rpc.batchSendSMS(rpc.subscribers,text);
+        rpc.batchSendSMS(rpc.getSubscribers(),text);
         
         return createSuccessResponse();
     }
@@ -119,7 +127,7 @@ public class APIServer extends NanoHTTPD {
         if (rawSubscribers.isEmpty()){
             return createErrorResponse(Response.Status.BAD_REQUEST, "unknown request params");
         }
-            rpc.subscribers = new ArrayList<String>(Arrays.asList(rawSubscribers.split("\\s*,\\s*")));
+            rpc.setSubscribers(new ArrayList<String>(Arrays.asList(rawSubscribers.split("\\s*,\\s*"))));
         return createSuccessResponse();
     }
 
@@ -129,14 +137,14 @@ public class APIServer extends NanoHTTPD {
     }
 
     public Response serveGetSubscribers(IHTTPSession session) throws JSONException{
-        if (rpc.subscribers.isEmpty()){
+        if (rpc.getSubscribers().isEmpty()){
             return createErrorResponse(Response.Status.BAD_REQUEST, "subscribers list is empty");
         }
         JSONStringer json = new JSONStringer();
         json.object();
         json.key("subscribers");
         json.array();
-        for(String s:rpc.subscribers){
+        for(String s:rpc.getSubscribers()){
             json.object();
             json.key("no").value(s);
             json.endObject();
@@ -208,4 +216,6 @@ public class APIServer extends NanoHTTPD {
         MIME_JAVASCRIPT = "text/javascript",
         MIME_CSS = "text/css",
         MIME_PNG = "image/png";
+
+
 }
