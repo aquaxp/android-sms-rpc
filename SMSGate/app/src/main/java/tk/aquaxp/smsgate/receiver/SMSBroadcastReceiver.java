@@ -40,7 +40,6 @@ public class SMSBroadcastReceiver extends BroadcastReceiver{
 
                         message += msgBody;
                     }
-                    //TODO
                     myRpc.transmitSMS(msg_from, message);
                 } catch (Exception e){
                     e.printStackTrace();

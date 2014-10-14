@@ -52,13 +52,11 @@ public final class RPCService extends Service {
             httpd.start();
             httpd.setSubscribers(loadSubscribers(getApplicationContext()));
         } catch (IOException e){
-            showNotification(R.string.service_failed);
+            showNotification(R.string.service_failed, false);
         }
 
-
-
         // Display notification about starting in notification bar
-        showNotification(R.string.service_started);
+        showNotification(R.string.service_started, true);
 
         Toast.makeText(getApplicationContext(), R.string.service_started, Toast.LENGTH_LONG).show();
     }
@@ -66,9 +64,15 @@ public final class RPCService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("LocalService", String.format("Received start id %d: %s", startId, intent));
-
+        httpd.setSubscribers(loadSubscribers(getApplicationContext()));
         // Mark this service as STICKY to continue running
         return START_STICKY;
+    }
+
+    @Override
+    public void onLowMemory() {
+        saveSubscribers(getApplicationContext(), httpd.getSubscribers());
+        super.onLowMemory();
     }
 
     @Override
@@ -86,17 +90,16 @@ public final class RPCService extends Service {
     }
 
     // Show notification while service is running
-    private void showNotification(int textId) {
+    private void showNotification(int textId, Boolean ongoing) {
         final CharSequence text = getText(R.string.service_started);
         final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-        //final Notification notification = new Notification(R.drawable.ic_launcher, text, System.currentTimeMillis());
 
         Notification.Builder notificationBuilder = new Notification.Builder(this)
                 .setContentTitle(text)
                 .setContentText(text)
                 .setContentIntent(contentIntent)
                 .setSmallIcon(R.drawable.ic_launcher)
-                .setOngoing(true);
+                .setOngoing(ongoing);
 
         this.notificationManager.notify(NOTIFICATION, notificationBuilder.build());
     }

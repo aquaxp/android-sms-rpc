@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Properties;
 
 import tk.aquaxp.smsgate.R;
 import tk.aquaxp.smsgate.util.RPC;
@@ -23,18 +22,13 @@ import tk.aquaxp.smsgate.util.RPC;
 public class APIServer extends NanoHTTPD {
     private static final boolean DEBUG = false;
     private static final String TAG = "APIServer";
-
     final RPC rpc;
     final Context context;
-
-    //private ArrayList<String> subscribers;
-
 
     public APIServer(Context context, int port) throws IOException{
         super(port);
         this.rpc = new RPC(context);
         this.context = context;
-        //subscribers = rpc.getSubscribers();
     }
 
     @Override
@@ -77,7 +71,6 @@ public class APIServer extends NanoHTTPD {
         return new Response(Response.Status.OK, MIME_JSON, json.toString());
     }
 
-    //public Response serveSMSSend(String uri, String method, Properties header, Properties parms, Properties files) throws JSONException{
     public Response serveSMSSend(IHTTPSession session) throws JSONException{
         String to = session.getParms().get("to");
         String text = session.getParms().get("text");
@@ -87,15 +80,13 @@ public class APIServer extends NanoHTTPD {
         }
 
         rpc.sendSMS(to,text);
-        
         return createSuccessResponse();
     }
-    public Response serveSMSList(String uri, String method, Properties header, Properties parms, Properties files) throws JSONException{
+    public Response serveSMSList(IHTTPSession session) throws JSONException{
         //TODO
         return createErrorResponse(Response.Status.METHOD_NOT_ALLOWED, "not implemented");
     }
     
-    //public Response serveBatchSMSSend(String uri, String method, Properties header, Properties parms, Properties files) throws JSONException{
     public Response serveBatchSMSSend(IHTTPSession session) throws JSONException{
 
         String text = session.getParms().get("text");
@@ -112,14 +103,14 @@ public class APIServer extends NanoHTTPD {
         return createSuccessResponse();
     }
     
-    public Response serveAddSubscriber(String uri, String method, Properties header, Properties parms, Properties files) throws JSONException{
+    public Response serveAddSubscriber(IHTTPSession session) throws JSONException{
         //TODO
-        return createSuccessResponse();
+        return createErrorResponse(Response.Status.METHOD_NOT_ALLOWED, "not implemented");
     }
 
-    public Response serveRemoveSubscriber(String uri, String method, Properties header, Properties parms, Properties files) throws JSONException{
+    public Response serveRemoveSubscriber(IHTTPSession session) throws JSONException{
         //TODO
-        return createSuccessResponse();
+        return createErrorResponse(Response.Status.METHOD_NOT_ALLOWED, "not implemented");
     }
 
     public Response serveSetSubscribers(IHTTPSession session) throws JSONException{
@@ -152,6 +143,10 @@ public class APIServer extends NanoHTTPD {
         json.endArray();
 
         return createSuccessResponse(json);
+    }
+
+    public Response serveFile(IHTTPSession session){
+        return null;
     }
 
     public Response serveResource(Response.IStatus status, String mimeType, int resourceId){
@@ -189,12 +184,15 @@ public class APIServer extends NanoHTTPD {
             if (session.getUri().equals("/settings/subscribers/list")){
                 return serveGetSubscribers(session);
             }
-            //if (session.getUri().equals("/settings/subscribers/add")){
-            //    return serveBatchSMSSend(session);
-            //}
-            //if (session.getUri().equals("/settings/subscribers/rem")){
-            //    return serveBatchSMSSend(session);
-            //}
+            if (session.getUri().equals("/messages/list")){
+                return serveSMSList(session);
+            }
+            if (session.getUri().equals("/settings/subscribers/add")){
+                return serveBatchSMSSend(session);
+            }
+            if (session.getUri().equals("/settings/subscribers/rem")){
+                return serveBatchSMSSend(session);
+            }
             if (session.getUri().equals("/settings/transmit/server")){
                 return serveSetTransmitServer(session);
             }
@@ -206,10 +204,6 @@ public class APIServer extends NanoHTTPD {
             return createErrorResponse(Response.Status.INTERNAL_ERROR, t.toString());
         }
     }
-
-       public Response serveFile(IHTTPSession session){
-           return null;
-       }
 
     public final static String
         MIME_JSON = "application/json",
