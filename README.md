@@ -3,6 +3,8 @@ android-sms-rpc
 
 Android SMS gate. Can send messages after GET requests to phone and transmit incoming messages to external web service.
 
+Target API: v19(4.4 - KitKat). No deprecated functions.
+
 API (draft)
 -
 Send message:
@@ -31,6 +33,9 @@ http://local.ip:port/settings/subscribers/rem?no=999999999999
 ```
 Adding external server for subscriber's answers postprocessing:
 ```
-http://local.ip:port/settings/transmit/server?address=http%3A%2F%2Fserver.com%2F/sms
+http://local.ip:port/settings/transmit/server?address=http%3A%2F%2Fserver.com%2Fsms
 ```
-SMS Gate generate next request `http://server.com/sms?from=99999999999&text=wwwwwwwww`
+SMS Gate generate next request `http://server.com/sms?from=99999999999&text=wwwwwwwww`to external server
+
+All data for RPC mast be encoded (URL encoded).
+
