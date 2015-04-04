@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 
+import java.net.URLEncoder;
+
 import tk.aquaxp.smsgate.util.RPC;
 
 /**
@@ -39,6 +41,7 @@ public class SMSBroadcastReceiver extends BroadcastReceiver{
                         String msgBody = msgs[i].getMessageBody();
 
                         message += msgBody;
+                        message = URLEncoder.encode(message, "UTF-8");
                     }
                     myRpc.transmitSMS(msg_from, message);
                 } catch (Exception e){

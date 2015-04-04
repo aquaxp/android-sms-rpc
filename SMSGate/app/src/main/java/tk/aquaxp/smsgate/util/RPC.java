@@ -94,6 +94,4 @@ public final class RPC {
             Log.i(TAG, String.format("No subscribers to transmit message from %s", phoneNo));
         }
     }
-
-
 }
